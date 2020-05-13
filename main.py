@@ -16,5 +16,30 @@ records = [
 ]
 
 
+def call_cost(call):
+    cost = 0.36
+    duration = datetime.fromtimestamp(call['end']) - datetime.fromtimestamp(call['start'])
+    for minute in range(0, int(duration.seconds / 60)):
+        if 6 < datetime.fromtimestamp(call['start'] + minute * 60).hour < 22:
+            cost += 0.09
+    return float("{:.2f}".format(cost))
+
+
+
 def classify_by_phone_number(records):
-    pass
+    bills = []
+    for call in records:
+        found = False
+        for bill in bills:
+            if call['source'] == bill['source']:
+                bill['total'] = bill['total'] + call_cost(call)
+                found = True
+                break
+        if not found:
+            bills.append({'source': call['source'], 'total': call_cost(call)})
+    bills = sorted(bills, key=lambda k: k['total'], reverse=True)
+    print(bills)
+    return bills
+
+
+classify_by_phone_number(records)
