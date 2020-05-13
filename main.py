@@ -22,8 +22,7 @@ def call_cost(call):
     for minute in range(0, int(duration.seconds / 60)):
         if 6 < datetime.fromtimestamp(call['start'] + minute * 60).hour < 22:
             cost += 0.09
-    return float("{:.2f}".format(cost))
-
+    return cost
 
 
 def classify_by_phone_number(records):
@@ -32,13 +31,12 @@ def classify_by_phone_number(records):
         found = False
         for bill in bills:
             if call['source'] == bill['source']:
-                bill['total'] = bill['total'] + call_cost(call)
+                bill['total'] = float("{:.2f}".format(bill['total'] + call_cost(call)))
                 found = True
                 break
         if not found:
-            bills.append({'source': call['source'], 'total': call_cost(call)})
+            bills.append({'source': call['source'], 'total': float("{:.2f}".format(call_cost(call)))})
     bills = sorted(bills, key=lambda k: k['total'], reverse=True)
-    print(bills)
     return bills
 
 
