@@ -30,18 +30,12 @@ def call_cost(call, base_cost):
 
 
 def classify_by_phone_number(records):
-    bills = []
+    bills_dict = {}
     base_cost = 0.36
     for call in records:
-        found = False
-        for bill in bills:
-            if call['source'] == bill['source']:
-                bill['total'] = float("{:.2f}".format(bill['total'] + call_cost(call, base_cost)))
-                found = True
-                break
-        if not found:
-            bills.append({'source': call['source'], 'total': float("{:.2f}".format(call_cost(call, base_cost)))})
-    bills = sorted(bills, key=lambda k: k['total'], reverse=True)
+        bills_dict[call['source']] = round(bills_dict.get(call['source'], 0) + call_cost(call, base_cost), 2)
+    bills = [{'source': source, 'total': total} for source, total in bills_dict.items()]
+    bills = sorted(bills, key=lambda cost: cost['total'], reverse=True)
     return bills
 
 
